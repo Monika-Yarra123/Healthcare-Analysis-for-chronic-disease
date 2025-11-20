@@ -17,7 +17,9 @@ st.title("🏥 Healthcare Analysis for Chronic Disease Risk Stratification")
 def load_data():
     file_path = "Chronic Diseases.csv"     # if you kept original name
     df = pd.read_csv(file_path)
-    return df    
+    return df   
+    st.write(df.columns)
+
     # Standardize column names to lowercase and handle duplicates
     df.columns = [c.strip().lower() for c in df.columns]
     
@@ -1107,6 +1109,7 @@ with checking:
     
 
     st.markdown("---")
+
 
 
 
