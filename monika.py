@@ -95,12 +95,12 @@ age_min, age_max = int(df['AGE'].min()), int(df['AGE'].max())
 age_range = st.sidebar.slider("Age Range", age_min, age_max, (age_min, age_max))
 
 # Gender filter
-gender_options = df['gender'].unique().tolist()
-selected_gender = st.sidebar.multiselect("Gender", gender_options, default=gender_options)
+gender_options = df['GENDER'].unique().tolist()
+selected_gender = st.sidebar.multiselect("GENDER", gender_options, default=gender_options)
 
 # County filter
-county_options = sorted(df['county'].dropna().unique().tolist())
-selected_counties = st.sidebar.multiselect("County", county_options, default=county_options)
+county_options = sorted(df['COUNTY'].dropna().unique().tolist())
+selected_counties = st.sidebar.multiselect("COUNTY", county_options, default=county_options)
 
 # Apply filters
 filtered_df = df[
@@ -1107,5 +1107,6 @@ with checking:
     
 
     st.markdown("---")
+
 
 
