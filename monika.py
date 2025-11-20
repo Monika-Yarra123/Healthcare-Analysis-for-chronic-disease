@@ -15,7 +15,7 @@ st.title("🏥 Healthcare Analysis for Chronic Disease Risk Stratification")
 # -------------------------------
 @st.cache_data
 def load_data():
-    file_path = r"C:\Users\Monika Yarra\Downloads\Chronic Diseases.csv"
+   file_path = "Chronic Diseases.csv"     # if you kept original name
     df = pd.read_csv(file_path)
     
     # Standardize column names to lowercase and handle duplicates
@@ -1105,4 +1105,5 @@ with checking:
         - Immediate lifestyle intervention needed
         """)
     
+
     st.markdown("---")
