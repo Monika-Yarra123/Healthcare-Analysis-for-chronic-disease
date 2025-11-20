@@ -91,7 +91,7 @@ df = load_data()
 st.sidebar.header("🔍 Global Filters")
 
 # Age filter
-age_min, age_max = int(df['age'].min()), int(df['age'].max())
+age_min, age_max = int(df['AGE'].min()), int(df['AGE'].max())
 age_range = st.sidebar.slider("Age Range", age_min, age_max, (age_min, age_max))
 
 # Gender filter
@@ -1107,4 +1107,5 @@ with checking:
     
 
     st.markdown("---")
+
 
