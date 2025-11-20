@@ -104,10 +104,10 @@ selected_counties = st.sidebar.multiselect("COUNTY", county_options, default=cou
 
 # Apply filters
 filtered_df = df[
-    (df['age'] >= age_range[0]) & 
-    (df['age'] <= age_range[1]) &
-    (df['gender'].isin(selected_gender)) &
-    (df['county'].isin(selected_counties))
+    (df['AGE'] >= age_range[0]) & 
+    (df['AGE'] <= age_range[1]) &
+    (df['GENDER'].isin(selected_gender)) &
+    (df['COUNTY'].isin(selected_counties))
 ].copy()
 
 st.sidebar.success(f"✅ {len(filtered_df)} patients")
@@ -1107,6 +1107,7 @@ with checking:
     
 
     st.markdown("---")
+
 
 
 
