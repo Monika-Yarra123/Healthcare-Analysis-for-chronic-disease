@@ -116,8 +116,8 @@ st.sidebar.info(f"📊 Out of {len(df)} total")
 # -------------------------------
 # Tabs
 # -------------------------------
-overview_tab, diabetes_tab, cvd_tab, copd_tab, Comorbidity_tab, checking = st.tabs([
-    "📊 Overview", "🩺 Diabetes", "🫀 CVD", "🫁 COPD", "📋 Comorbidity", "🔍 Individual Patient Risk"
+overview_tab, diabetes_tab, cvd_tab, copd_tab, Comorbidity_tab, checking, risk_calculator = st.tabs([
+    "📊 Overview", "🩺 Diabetes", "🫀 CVD", "🫁 COPD", "📋 Comorbidity", "🔍 Individual Patient Risk", "🧮 Risk Calculator"
 ])
 
 # ===============================
@@ -177,9 +177,6 @@ with overview_tab:
     
     st.markdown("---")
 
-   # ===============================
-# TAB: OVERVIEW
-# ===============================
 with overview_tab:
     st.header("📊 Overview: Demographics & Risk Distribution")
     st.markdown("---")
@@ -289,7 +286,9 @@ with overview_tab:
     else:
         st.warning(f"No valid birth year or risk score data for {selected_disease}.")
 
-##------------TAB 2 Diabetes--------------------##
+# ===============================
+# TAB 2: DIABETES
+# ===============================
 
 with diabetes_tab:
     st.header("🩺 Diabetes Insights")
@@ -428,7 +427,9 @@ with diabetes_tab:
 
     st.markdown("---")
 
-##-------------------------TAB 3 CVD --------------------------------------##
+# ===============================
+# TAB 3: CVD
+# ===============================
 
 ### CVD Analysis
 with cvd_tab:
@@ -553,7 +554,9 @@ with cvd_tab:
 
     st.markdown("---")
 
-## TAB 4 COPD---------------------#
+# ===============================
+# TAB 4: COPD
+# ===============================
 
 with copd_tab:
     st.header("🫁 COPD Insights")
@@ -677,8 +680,6 @@ with copd_tab:
         st.info("No county data available for COPD patients.")
 
     st.markdown("---")
-
-       
 # ===============================
 # TAB 5: COMORBIDITY ANALYSIS
 # ===============================
@@ -1106,10 +1107,408 @@ with checking:
         """)
     
     st.markdown("---")
-
-
-
-
-
-
-
+# ===============================
+# TAB 7: PERSONAL RISK CALCULATOR
+# ===============================
+with risk_calculator:
+    st.header("🩺 Check Your Personal Health Risk")
+    st.markdown("### Enter your health metrics to assess your risk for Diabetes, CVD, and COPD")
+    st.markdown("---")
+    
+    # Create two columns for input
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("📋 Basic Information")
+        
+        # Age input
+        user_age = st.number_input(
+            "Age (years)",
+            min_value=18,
+            max_value=95,
+            value=30,
+            step=1,
+            help="Enter your age in years"
+        )
+        
+        # Gender selection
+        user_gender = st.selectbox(
+            "Gender",
+            options=["Male", "Female"],
+            help="Select your biological gender"
+        )
+        
+        # BMI input
+        user_bmi = st.number_input(
+            "BMI (kg/m²)",
+            min_value=10.0,
+            max_value=60.0,
+            value=22.0,
+            step=0.1,
+            help="Body Mass Index = weight(kg) / height(m)²"
+        )
+        
+        # Systolic Blood Pressure
+        user_sbp = st.number_input(
+            "Systolic Blood Pressure (mmHg)",
+            min_value=80,
+            max_value=200,
+            value=120,
+            step=1,
+            help="The top number in blood pressure reading"
+        )
+        
+        # Diastolic Blood Pressure
+        user_dbp = st.number_input(
+            "Diastolic Blood Pressure (mmHg)",
+            min_value=50,
+            max_value=130,
+            value=80,
+            step=1,
+            help="The bottom number in blood pressure reading"
+        )
+    
+    with col2:
+        st.subheader("🧪 Lab Values & Lifestyle")
+        
+        # Glucose
+        user_glucose = st.number_input(
+            "Glucose (mg/dL)",
+            min_value=50.0,
+            max_value=400.0,
+            value=90.0,
+            step=1.0,
+            help="Fasting blood glucose level"
+        )
+        
+        # HbA1c
+        user_hba1c = st.number_input(
+            "Hemoglobin A1c (%)",
+            min_value=4.0,
+            max_value=15.0,
+            value=5.5,
+            step=0.1,
+            help="Average blood sugar over 3 months"
+        )
+        
+        # Total Cholesterol
+        user_cholesterol = st.number_input(
+            "Total Cholesterol (mg/dL)",
+            min_value=100.0,
+            max_value=400.0,
+            value=180.0,
+            step=1.0,
+            help="Total cholesterol level"
+        )
+        
+        # Smoking status
+        user_smoking = st.radio(
+            "Do you smoke or use tobacco?",
+            options=["No", "Yes"],
+            horizontal=True,
+            help="Current or past tobacco use"
+        )
+        
+        # Family history
+        user_family_history = st.radio(
+            "Family history of heart/lung disease?",
+            options=["No", "Yes"],
+            horizontal=True,
+            help="Do your parents or siblings have chronic diseases?"
+        )
+    
+    st.markdown("---")
+    
+    # Calculate Risk Button
+    if st.button("🔍 Check My Risk", type="primary", use_container_width=True):
+        
+        st.markdown("---")
+        st.subheader("📊 Your Health Risk Assessment Results")
+        st.markdown("---")
+        
+        # ===========================
+        # CALCULATE DIABETES RISK
+        # ===========================
+        # Normalize inputs for diabetes calculation
+        glucose_risk = np.clip((user_glucose - 70) / 250, 0, 1)
+        hba1c_risk = np.clip((user_hba1c - 4.0) / 10.0, 0, 1)
+        bmi_risk_diabetes = np.clip((user_bmi - 18.5) / 25, 0, 1)
+        
+        # Calculate diabetes risk score (0-1)
+        diabetes_risk_score = np.clip(
+            0.5 * glucose_risk + 0.3 * hba1c_risk + 0.2 * bmi_risk_diabetes,
+            0, 1
+        )
+        
+        # Determine diabetes risk level (using your thresholds)
+        if diabetes_risk_score < 0.40:
+            diabetes_risk_level = "Low Risk"
+            diabetes_color = "#2ecc71"
+        elif diabetes_risk_score < 0.70:
+            diabetes_risk_level = "Medium Risk"
+            diabetes_color = "#f39c12"
+        else:
+            diabetes_risk_level = "High Risk"
+            diabetes_color = "#e74c3c"
+        
+        # ===========================
+        # CALCULATE CVD RISK
+        # ===========================
+        # Normalize inputs for CVD calculation
+        if user_bmi < 18.5:
+            bmi_risk_cvd = 0.1
+        elif user_bmi < 25:
+            bmi_risk_cvd = 0.2
+        elif user_bmi < 30:
+            bmi_risk_cvd = 0.5
+        elif user_bmi < 35:
+            bmi_risk_cvd = 0.7
+        elif user_bmi < 40:
+            bmi_risk_cvd = 0.85
+        else:
+            bmi_risk_cvd = 0.95
+        
+        if user_sbp < 120:
+            sbp_risk = 0.2
+        elif user_sbp < 130:
+            sbp_risk = 0.4
+        elif user_sbp < 140:
+            sbp_risk = 0.6
+        elif user_sbp < 160:
+            sbp_risk = 0.8
+        else:
+            sbp_risk = 0.95
+        
+        if user_dbp < 80:
+            dbp_risk = 0.2
+        elif user_dbp < 90:
+            dbp_risk = 0.5
+        elif user_dbp < 100:
+            dbp_risk = 0.75
+        else:
+            dbp_risk = 0.9
+        
+        # Calculate CVD risk score (0-1)
+        cvd_risk_score = np.clip(
+            0.25 * bmi_risk_cvd + 0.40 * sbp_risk + 0.35 * dbp_risk,
+            0, 1
+        )
+        
+        # Determine CVD risk level (using your thresholds)
+        if cvd_risk_score < 0.10:
+            cvd_risk_level = "Low Risk"
+            cvd_color = "#2ecc71"
+        elif cvd_risk_score < 0.20:
+            cvd_risk_level = "Medium Risk"
+            cvd_color = "#f39c12"
+        else:
+            cvd_risk_level = "High Risk"
+            cvd_color = "#e74c3c"
+        
+        # ===========================
+        # CALCULATE COPD RISK
+        # ===========================
+        # Age risk
+        if user_age < 40:
+            age_risk = 0.1
+        elif user_age < 50:
+            age_risk = 0.3
+        elif user_age < 60:
+            age_risk = 0.5
+        elif user_age < 70:
+            age_risk = 0.7
+        else:
+            age_risk = 0.9
+        
+        # Smoking risk
+        smoking_risk = 0.8 if user_smoking == "Yes" else 0.2
+        
+        # Family history risk
+        genetic_risk = 0.6 if user_family_history == "Yes" else 0.3
+        
+        # Calculate COPD risk score (0-1)
+        copd_risk_score = np.clip(
+            0.40 * age_risk + 0.45 * smoking_risk + 0.15 * genetic_risk,
+            0, 1
+        )
+        
+        # Determine COPD risk level (using your thresholds)
+        if copd_risk_score < 0.35:
+            copd_risk_level = "Low Risk"
+            copd_color = "#2ecc71"
+        elif copd_risk_score < 0.65:
+            copd_risk_level = "Medium Risk"
+            copd_color = "#f39c12"
+        else:
+            copd_risk_level = "High Risk"
+            copd_color = "#e74c3c"
+        
+        # ===========================
+        # DISPLAY RESULTS
+        # ===========================
+        
+        # Create 3 columns for gauge charts
+        col1, col2, col3 = st.columns(3)
+        
+        # DIABETES GAUGE
+        with col1:
+            st.markdown("### 🩺 Diabetes Risk")
+            fig_diabetes = go.Figure(go.Indicator(
+                mode="gauge+number",
+                value=diabetes_risk_score * 100,
+                title={'text': diabetes_risk_level, 'font': {'size': 20, 'color': diabetes_color}},
+                number={'suffix': "%", 'font': {'size': 30}},
+                gauge={
+                    'axis': {'range': [0, 100], 'tickwidth': 1},
+                    'bar': {'color': diabetes_color, 'thickness': 0.75},
+                    'steps': [
+                        {'range': [0, 40], 'color': "lightgreen"},
+                        {'range': [40, 70], 'color': "lightyellow"},
+                        {'range': [70, 100], 'color': "lightcoral"}
+                    ],
+                    'threshold': {
+                        'line': {'color': "black", 'width': 2},
+                        'thickness': 0.75,
+                        'value': diabetes_risk_score * 100
+                    }
+                }
+            ))
+            fig_diabetes.update_layout(height=300, margin=dict(l=20, r=20, t=60, b=20))
+            st.plotly_chart(fig_diabetes, use_container_width=True)
+            
+            if diabetes_risk_level == "High Risk":
+                st.error(f"**Risk Score:** {diabetes_risk_score:.2%}")
+                st.warning("⚠️ **Action Needed:** Consult a doctor for diabetes screening")
+            elif diabetes_risk_level == "Medium Risk":
+                st.warning(f"**Risk Score:** {diabetes_risk_score:.2%}")
+                st.info("💡 **Recommendation:** Monitor glucose levels regularly")
+            else:
+                st.success(f"**Risk Score:** {diabetes_risk_score:.2%}")
+                st.info("✅ **Status:** Continue healthy lifestyle")
+        
+        # CVD GAUGE
+        with col2:
+            st.markdown("### 🫀 CVD Risk")
+            fig_cvd = go.Figure(go.Indicator(
+                mode="gauge+number",
+                value=cvd_risk_score * 100,
+                title={'text': cvd_risk_level, 'font': {'size': 20, 'color': cvd_color}},
+                number={'suffix': "%", 'font': {'size': 30}},
+                gauge={
+                    'axis': {'range': [0, 100], 'tickwidth': 1},
+                    'bar': {'color': cvd_color, 'thickness': 0.75},
+                    'steps': [
+                        {'range': [0, 10], 'color': "lightgreen"},
+                        {'range': [10, 20], 'color': "lightyellow"},
+                        {'range': [20, 100], 'color': "lightcoral"}
+                    ],
+                    'threshold': {
+                        'line': {'color': "black", 'width': 2},
+                        'thickness': 0.75,
+                        'value': cvd_risk_score * 100
+                    }
+                }
+            ))
+            fig_cvd.update_layout(height=300, margin=dict(l=20, r=20, t=60, b=20))
+            st.plotly_chart(fig_cvd, use_container_width=True)
+            
+            if cvd_risk_level == "High Risk":
+                st.error(f"**Risk Score:** {cvd_risk_score:.2%}")
+                st.warning("⚠️ **Action Needed:** Urgent cardiovascular check-up required")
+            elif cvd_risk_level == "Medium Risk":
+                st.warning(f"**Risk Score:** {cvd_risk_score:.2%}")
+                st.info("💡 **Recommendation:** Monitor blood pressure regularly")
+            else:
+                st.success(f"**Risk Score:** {cvd_risk_score:.2%}")
+                st.info("✅ **Status:** Heart health looks good")
+        
+        # COPD GAUGE
+        with col3:
+            st.markdown("### 🫁 COPD Risk")
+            fig_copd = go.Figure(go.Indicator(
+                mode="gauge+number",
+                value=copd_risk_score * 100,
+                title={'text': copd_risk_level, 'font': {'size': 20, 'color': copd_color}},
+                number={'suffix': "%", 'font': {'size': 30}},
+                gauge={
+                    'axis': {'range': [0, 100], 'tickwidth': 1},
+                    'bar': {'color': copd_color, 'thickness': 0.75},
+                    'steps': [
+                        {'range': [0, 35], 'color': "lightgreen"},
+                        {'range': [35, 65], 'color': "lightyellow"},
+                        {'range': [65, 100], 'color': "lightcoral"}
+                    ],
+                    'threshold': {
+                        'line': {'color': "black", 'width': 2},
+                        'thickness': 0.75,
+                        'value': copd_risk_score * 100
+                    }
+                }
+            ))
+            fig_copd.update_layout(height=300, margin=dict(l=20, r=20, t=60, b=20))
+            st.plotly_chart(fig_copd, use_container_width=True)
+            
+            if copd_risk_level == "High Risk":
+                st.error(f"**Risk Score:** {copd_risk_score:.2%}")
+                st.warning("⚠️ **Action Needed:** Pulmonary function test recommended")
+            elif copd_risk_level == "Medium Risk":
+                st.warning(f"**Risk Score:** {copd_risk_score:.2%}")
+                st.info("💡 **Recommendation:** Quit smoking, avoid pollutants")
+            else:
+                st.success(f"**Risk Score:** {copd_risk_score:.2%}")
+                st.info("✅ **Status:** Lung health is good")
+        
+        st.markdown("---")
+        
+        # OVERALL HEALTH SUMMARY
+        st.subheader("🏥 Overall Health Summary")
+        
+        high_risk_count = sum([
+            diabetes_risk_level == "High Risk",
+            cvd_risk_level == "High Risk",
+            copd_risk_level == "High Risk"
+        ])
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            if high_risk_count == 0:
+                st.success("✅ **Great News!** No high-risk conditions detected. Keep maintaining your healthy lifestyle!")
+            elif high_risk_count == 1:
+                st.warning("⚠️ **Attention Required:** You have 1 high-risk condition. Please consult a healthcare provider.")
+            elif high_risk_count == 2:
+                st.error("🔴 **Important:** You have 2 high-risk conditions. Immediate medical consultation is strongly recommended.")
+            else:
+                st.error("🚨 **URGENT:** You have 3 high-risk conditions. Please seek medical attention immediately!")
+            
+            st.markdown("### 💡 General Recommendations:")
+            recommendations = []
+            
+            if user_bmi > 25:
+                recommendations.append("- 🏃 **Weight Management:** Aim for a healthy BMI (18.5-25)")
+            if user_sbp > 120 or user_dbp > 80:
+                recommendations.append("- 🧂 **Blood Pressure:** Reduce salt intake, exercise regularly")
+            if user_glucose > 100:
+                recommendations.append("- 🍎 **Diet:** Reduce sugar intake, eat more fiber")
+            if user_smoking == "Yes":
+                recommendations.append("- 🚭 **Smoking:** Quit smoking immediately - it affects all three conditions")
+            if user_age > 50:
+                recommendations.append("- 📅 **Regular Checkups:** Annual health screenings recommended")
+            
+            if recommendations:
+                for rec in recommendations:
+                    st.markdown(rec)
+            else:
+                st.markdown("- ✅ Continue your healthy lifestyle habits")
+                st.markdown("- 📅 Regular health check-ups every 1-2 years")
+        
+        with col2:
+            st.metric("Total Risk Factors", high_risk_count)
+            st.metric("Age Group", f"{user_age} years")
+            st.metric("BMI Category", 
+                     "Underweight" if user_bmi < 18.5 else
+                     "Normal" if user_bmi < 25 else
+                     "Overweight" if user_bmi < 30 else
+                     "Obese")
+        
+        st.markdown("---")
