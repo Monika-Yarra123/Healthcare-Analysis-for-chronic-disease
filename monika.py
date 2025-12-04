@@ -15,7 +15,7 @@ st.title("🏥 Healthcare Analysis for Chronic Disease Risk Stratification")
 # -------------------------------
 @st.cache_data
 def load_data():
-    file_path = r"C:\Users\Monika Yarra\Downloads\Chronic.csv"
+    file_path = "Chronic.csv"
     df = pd.read_csv(file_path)
     
     # Standardize column names to lowercase and handle duplicates
@@ -1515,4 +1515,5 @@ with risk_calculator:
                      "Overweight" if user_bmi < 30 else
                      "Obese")
         
+
         st.markdown("---")
