@@ -9,7 +9,7 @@ A Streamlit dashboard with 7 tabs was built in Visual Studio Code to explore pat
 
 Objectives:
 
-1. Predict risk for Diabetes, CVD, COPD
+1.Predict risk for Diabetes, CVD, COPD
 
 2.Generate individual risk scores using Logistic Regression
 
